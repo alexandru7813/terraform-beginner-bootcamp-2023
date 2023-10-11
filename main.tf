@@ -13,13 +13,13 @@ terraform {
   #    name = "terra-house-1"
   #  }
   #}
-#   cloud {
-#     organization = "CTMSolutions"
+  cloud {
+    organization = "CTMSolutions"
 
-#     workspaces {
-#       name = "terra-house-1"
-#     }
-#   }
+    workspaces {
+      name = "terra-house-1"
+    }
+  }
   # required_providers {
   #   # random = {
   #   #   source = "hashicorp/random"
@@ -38,24 +38,39 @@ provider "terratowns" {
   token = var.terratowns_access_token
 }
 
-module "terrahouse_aws" {
-  source = "./modules/terrahouse_aws"
+module "home_dracula_hosting" {
+  source = "./modules/terrahome_aws"
   user_uuid = var.teacherseat_user_uuid
-  # bucket_name = var.bucket_name
-  index_html_filepath = var.index_html_filepath
-  error_html_filepath = var.error_html_filepath
-  content_version = var.content_version
-  assets_path = var.assets_path
+  public_path = var.dracula.public_path
+  content_version = var.dracula.content_version
 }
 
 resource "terratowns_home" "home" {
   name = "Welcome to Dracula's Castle!"
   description = <<DESCRIPTION
-Dracula's Castle is an amazing B&B.
-A fantastic location that people are dying to visit.
+Experience the enchantment of Dracula's Castle like never before.
+Our Bed and Breakfast offers a unique and cozy stay in the heart of Transylvania.
 DESCRIPTION
-  domain_name = module.terrahouse_aws.cloudfront_url
-  # domain_name = "3fdq3gz.cloudfront.net"
-  town = "missingo"
-  content_version = 1
+  domain_name = module.home_dracula_hosting.domain_name
+  town = "melomaniac-mansion"
+  content_version = var.dracula.content_version
+}
+
+module "home_moon_hosting" {
+  source = "./modules/terrahome_aws"
+  user_uuid = var.teacherseat_user_uuid
+  public_path = var.moon.public_path
+  content_version = var.moon.content_version
+}
+
+resource "terratowns_home" "home_moon" {
+  name = "Welcome to Our Futuristic Moon Resort"
+  description = <<DESCRIPTION
+Escape to the extraordinary with our Moon Resort,
+a stunning spherical oasis nestled on the lunar surface.
+Experience luxury like never before.
+DESCRIPTION
+  domain_name = module.home_moon_hosting.domain_name
+  town = "video-valley"
+  content_version = var.moon.content_version
 }
